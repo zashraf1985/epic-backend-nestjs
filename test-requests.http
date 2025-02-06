@@ -1,0 +1,33 @@
+@BASE_URL=https://vendorservices.epic.com/interconnect-amcurprd-oauth
+@ACCESS_TOKEN=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ1cm46ZXBpYzphcHBvcmNoYXJkLmN1cnByb2QiLCJjbGllbnRfaWQiOiI0Nzk2MDdlNC03NmRmLTQyZWMtYjU4OS0yOTk2ZmZkMGY1NGYiLCJlcGljLmVjaSI6InVybjplcGljOkN1cnJlbnQtQXBwLU9yY2hhcmQtUHJvZHVjdGlvbiIsImVwaWMubWV0YWRhdGEiOiJFb1lNUXBOVXZNaEJpcFh1QnNkcnN6NmtmWUF6b3l5enNTZmlwSWRvdXhHcnZ1Z0FYRnlCR2hZM2tudGp5Snk5Q1pqZWdlSmh5dHgycmxwSkNaVVprRVJ2cU1uckhraVpMUzV3aGZzRW5DbHRHbk9LN0V5VjhuX0kxMmlHa2VsaiIsImVwaWMudG9rZW50eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4NzkzOTE0LCJpYXQiOjE3Mzg3OTAzMTQsImlzcyI6InVybjplcGljOmFwcG9yY2hhcmQuY3VycHJvZCIsImp0aSI6Ijc2NWNlZjRlLTg1NDAtNDNlOC04MTE4LTZkMGNjNzkzNGRkOSIsIm5iZiI6MTczODc5MDMxNCwic3ViIjoiZWJHZWV1UHhhMno0MDM5QzVmVFV1OEEzIn0.QFZ87rnkjrf2yxYJovJznGtTDsDfOOZ1zLcLrJ5EkadNik0iLTbokioEIBq21oDtUFy-UKus0XGjt_QEruXjU_gUbm5CLjZX1OTqmHPTmdpdx52WolmhXoZbVauaw37oCUXfwfD8Ist98JJsQQbjzABAFfTvOQYiqYpIpwCkbJbIkUdfF7QzWAnZ8-os71jzOUKuCpYuPTgBA72NtfEzrLqNmxnveCe4geY2F8a-DmRCpr7RJk5t2z4QSf889ug-_8XXE8L8RHr80sumr3HMNJazjnLf5dMqjt-es5DacJmT_86PW8eLxUr2NaeLCz4lG1NY7-_Nu5NDCORb3EQL2Q
+
+GET https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/DSTU2/metadata
+Accept: application/fhir+json
+
+###
+GET https://vendorservices.epic.com/interconnect-amcurprd-oauth/api/FHIR/R4/Patient?family=mychart&given=theodore&birthdate=1948-07-07
+Authorization: Bearer {{ACCESS_TOKEN}}
+Accept: application/fhir+json
+
+###
+get {{BASE_URL}}/api/FHIR/R4/Patient/T81lum-5p6QvDR7l6hv7lfE52bAbA2ylWBnv9CZEzNb0B
+Authorization: Bearer {{ACCESS_TOKEN}}
+Accept: application/fhir+json
+
+###
+get {{BASE_URL}}/api/FHIR/R4/Patient/e63wRTbPfr1p8UW81d8Seiw3
+Authorization: Bearer {{ACCESS_TOKEN}}
+Accept: application/fhir+json
+
+###
+post {{BASE_URL}}/api/FHIR/R4/Patient
+Content-Type: application/json
+Accept: application/fhir+json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{"resourceType":"Patient","identifier":[{"use":"usual","system":"urn:oid:2.16.840.1.113883.4.1","value":"000-00-0000"}],"active":"true","name":[{"use":"usual","family":"FHIRcreate","given":["Zeeshan"]}],"telecom":[{"system":"phone","value":"321-555-1234","use":"home"},{"system":"email","value":"elle.FHIRcreate@fhirtest.edu"}],"gender":"female","birthDate":"1988-07-30","address":[{"use":"home","line":["100 Milky Way"],"city":"Verona","state":"WI","postalCode":"53593","country":"USA"}],"maritalStatus":{"text":"Single"},"generalPractitioner":[{"display":"Physician Family Medicine, MD","reference":"eM5CWtq15N0WJeuCet5bJlQ3"}],"extension":[{"url":"http://open.epic.com/FHIR/STU3/StructureDefinition/patient-preferred-provider-language","valueCodeableConcept":{"coding":[{"system":"urn:oid:2.16.840.1.113883.6.99","code":"ja"}],"text":"Japanese"}},{"url":"http://open.epic.com/FHIR/STU3/StructureDefinition/patient-preferred-provider-sex","valueCode":"female"}]}
+
+###
+get {{BASE_URL}}/api/FHIR/R4/Patient/e107iyk4s1YkZReCFlD2GLw3
+Authorization: Bearer {{ACCESS_TOKEN}}
+Accept: application/fhir+json
