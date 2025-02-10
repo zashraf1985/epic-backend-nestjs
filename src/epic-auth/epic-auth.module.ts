@@ -12,7 +12,7 @@ const private_key = fs.readFileSync('private_key.pem', 'utf8');
     controllers: [EpicAuthController],
     providers: [
         BackendServiceAuthService,
-        SmartOnFhirAuthService,
+        SmartOnFhirAuthService,        
     ],
     imports: [
         JwtModule.register({

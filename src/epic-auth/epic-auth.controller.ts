@@ -48,5 +48,11 @@ export class EpicAuthController {
         }
 
         return { accessToken: tokenResponse };        
-    }    
+    }
+
+    @Get('standalone')
+    @Redirect()
+    async startStandaloneLaunch(): Promise<any> {
+        return { url: await this.smartOnFhirAuthService.buildStandaloneAuthUrl() };
+    }
 }

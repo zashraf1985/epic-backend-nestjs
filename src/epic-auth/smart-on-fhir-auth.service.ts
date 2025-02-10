@@ -51,6 +51,10 @@ export class SmartOnFhirAuthService {
     requestBody.append('redirect_uri', this.redirectUri);
     requestBody.append('client_id', EPIC_CLIENT_ID);    
 
+    if (this.tokenUrl === undefined) {
+      this.tokenUrl = "https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/token"
+    }
+
     try {
       const response = await firstValueFrom(
         this.httpService.post(this.tokenUrl, requestBody.toString(), {
@@ -63,5 +67,10 @@ export class SmartOnFhirAuthService {
       console.error('Error exchanging code for token:', error);
       return null;
     }
+  }
+
+  async buildStandaloneAuthUrl(): Promise<string> {
+    const state = Math.random().toString(36).substring(7);
+    return `https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/authorize?client_id=${EPIC_CLIENT_ID}&scope=openid%20fhirUser&response_type=code&redirect_uri=${encodeURIComponent(this.redirectUri)}&state=${state}&aud=https%3A%2F%2Fvendorservices.epic.com%2Finterconnect-amcurprd-oauth%2Fapi%2FFHIR%2FR4`;
   }
 }
