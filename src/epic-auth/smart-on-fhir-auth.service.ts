@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { URLSearchParams } from 'url';
 
 const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94'
+//const EPIC_CLIENT_ID = '1a9d7bf8-04c5-49a2-bbc6-73de46a0895a'
 
 @Injectable()
 export class SmartOnFhirAuthService {
