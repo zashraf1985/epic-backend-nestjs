@@ -12,7 +12,11 @@ export class BackendServiceAuthService {
 
     constructor(private readonly jwtService: JwtService) {
         // Load private key from a file
-        this.privateKey = fs.readFileSync("private_key.pem", "utf8");
+        try {
+          this.privateKey = fs.readFileSync("private_key.pem", "utf8")
+        } catch (error) {
+          console.warn("Error reading private key:", error.message)
+        }
     }
 
     generateJWT(): string {

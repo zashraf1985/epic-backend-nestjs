@@ -6,7 +6,13 @@ import * as fs from 'fs';
 import { HttpModule } from '@nestjs/axios';
 import { SmartOnFhirAuthService } from './smart-on-fhir-auth.service';
 
-const private_key = fs.readFileSync('private_key.pem', 'utf8');
+let privateKey = ""
+
+try {
+    privateKey = fs.readFileSync('private_key.pem', 'utf8')
+} catch (error) {
+    console.warn('Error reading private key:', error)
+}
 
 @Module({
     controllers: [EpicAuthController],
@@ -15,9 +21,7 @@ const private_key = fs.readFileSync('private_key.pem', 'utf8');
         SmartOnFhirAuthService,        
     ],
     imports: [
-        JwtModule.register({
-            privateKey: private_key,
-        }),
+        JwtModule.register({ privateKey }),
         HttpModule,
     ],
 })
