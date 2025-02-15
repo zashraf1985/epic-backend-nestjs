@@ -41,13 +41,13 @@ export class EpicAuthController {
         console.log('Received Auth Code:', authCode);
 
         // Exchange the authorization code for an access token
-        const tokenResponse = await this.smartOnFhirAuthService.getAccessToken(authCode);
+        const tokenResponse = await this.smartOnFhirAuthService.getJWT(authCode);
 
         if (!tokenResponse) {
             return new HttpException('Failed to retrieve access token', 400);            
         }
 
-        return { accessToken: tokenResponse };        
+        return { accessToken: tokenResponse };
     }
 
     @Get('standalone')

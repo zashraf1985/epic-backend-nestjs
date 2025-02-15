@@ -2,8 +2,12 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { URLSearchParams } from 'url';
+import { JwtService } from '@nestjs/jwt';
 
+// Patient
 const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94'
+
+// Practiotioner
 //const EPIC_CLIENT_ID = '1a9d7bf8-04c5-49a2-bbc6-73de46a0895a'
 
 @Injectable()
@@ -12,7 +16,10 @@ export class SmartOnFhirAuthService {
   private authUrl: string;
   private tokenUrl: string;
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly jwtService: JwtService
+  ) {}
 
   // Step 1: Fetch Metadata to Get OAuth URLs
   async getMetadata(iss: string): Promise<any> {
@@ -45,7 +52,7 @@ export class SmartOnFhirAuthService {
   }
 
   // Step 3: Exchange Authorization Code for Access Token
-  async getAccessToken(authCode: string): Promise<any> { 
+  async getJWT(authCode: string): Promise<any> { 
     const requestBody = new URLSearchParams();
     requestBody.append('grant_type', 'authorization_code');
     requestBody.append('code', authCode);
@@ -62,6 +69,13 @@ export class SmartOnFhirAuthService {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         })
       );
+
+      console.log('Token Response:', response.data)
+
+      const idToken = response.data.id_token
+      console.log('ID Token:', idToken)
+      console.log(this.jwtService.decode(idToken))
+
 
       return response.data;
     } catch (error) {
