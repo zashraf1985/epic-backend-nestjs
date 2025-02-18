@@ -73,3 +73,12 @@ get https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/authorize
     &scope=launch
     &state=goei2i
     &aud=https%3A%2F%2Fvendorservices.epic.com%2Finterconnect-amcurprd-oauth%2Fapi%2FFHIR%2FR4
+
+
+###
+get http://localhost:3000/users/test-auth-api
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZmZDg0ZS0xZWJkLTRhYTgtOTc1Yi1kYjI1YjUxNjc3ZmEiLCJyb2xlIjoiUGF0aWVudCIsImlhdCI6MTczOTkxOTkxOH0.uZNjCNk0Dkm-yhEWKEETEgbHpH0tmBNuePdxD6tTxBA
+
+###
+get http://localhost:3000/patients/demographics
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZmZDg0ZS0xZWJkLTRhYTgtOTc1Yi1kYjI1YjUxNjc3ZmEiLCJyb2xlIjoiUGF0aWVudCIsImlhdCI6MTczOTkxOTkxOH0.uZNjCNk0Dkm-yhEWKEETEgbHpH0tmBNuePdxD6tTxBA

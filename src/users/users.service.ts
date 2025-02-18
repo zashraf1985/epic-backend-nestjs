@@ -1,8 +1,30 @@
+import {
+  createParamDecorator,
+  ExecutionContext,
+  Injectable,
+  SetMetadata,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Role, User } from './user.entity';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { JwtService } from '@nestjs/jwt';
+
+export const Roles = (...roles: Role[]) => SetMetadata('roles', roles);
+export const EpicAccessToken = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request['epic_access_token'];
+  },
+);
+export const EpicScope = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request['epic_scope'];
+  },
+);
 
 // Patient
 const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94';
@@ -11,12 +33,14 @@ const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94';
 //const EPIC_CLIENT_ID = '1a9d7bf8-04c5-49a2-bbc6-73de46a0895a'
 
 @Injectable()
-export class SmartOnFhirAuthService {
-  private redirectUri = 'http://localhost:3000/epic-auth/token-callback';
+export class UsersService {
+  private redirectUri = 'http://localhost:3000/users/login/token-callback';
   private authUrl: string;
   private tokenUrl: string;
 
   constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
     private readonly httpService: HttpService,
     private readonly jwtService: JwtService,
   ) {}
@@ -75,13 +99,40 @@ export class SmartOnFhirAuthService {
         }),
       );
 
-      console.log('Token Response:', response.data);
+      const idTokenDecoded = this.jwtService.decode(response.data.id_token);
+      console.log('response.data:', response.data);
+      console.log('Decoded ID Token:', idTokenDecoded);
+      let user = await this.usersRepository.findOneBy({
+        fhir_id: idTokenDecoded.sub,
+      });
+      if (user == null) {
+        user = this.usersRepository.create({
+          fhir_id: idTokenDecoded.sub,
+          access_token: response.data.access_token,
+          expires_at: new Date(Date.now() + response.data.expires_in * 1000),
+          role: idTokenDecoded.fhirUser.split('/')[7],
+          dstu2_id: response.data['__epic.dstu2.patient'],
+          scope: response.data.scope,
+        });
+      } else {
+        user.access_token = response.data.access_token;
+        user.expires_at = new Date(
+          Date.now() + response.data.expires_in * 1000,
+        );
+        user.scope = response.data.scope;
+        user.role = idTokenDecoded.fhirUser.split('/')[7];
+      }
+      await this.usersRepository.save(user);
 
-      const idToken = response.data.id_token;
-      console.log('ID Token:', idToken);
-      console.log(this.jwtService.decode(idToken));
+      // 🔥 Generate JWT with user ID & type
+      const jwtPayload = {
+        sub: user.id,
+        role: user.role,
+      };
 
-      return response.data;
+      console.log('Generated JWT:', jwtPayload);
+
+      return this.jwtService.sign(jwtPayload);
     } catch (error) {
       console.error('Error exchanging code for token:', error);
       return null;
@@ -91,5 +142,9 @@ export class SmartOnFhirAuthService {
   async buildStandaloneAuthUrl(): Promise<string> {
     const state = Math.random().toString(36).substring(7);
     return `https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/authorize?client_id=${EPIC_CLIENT_ID}&scope=openid%20fhirUser&response_type=code&redirect_uri=${encodeURIComponent(this.redirectUri)}&state=${state}&aud=https%3A%2F%2Fvendorservices.epic.com%2Finterconnect-amcurprd-oauth%2Fapi%2FFHIR%2FR4`;
+  }
+
+  async getUserById(id: number): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ id: id });
   }
 }

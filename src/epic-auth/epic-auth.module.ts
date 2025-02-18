@@ -16,14 +16,12 @@ try {
 
 @Module({
     controllers: [EpicAuthController],
-    providers: [
-        BackendServiceAuthService,
-        SmartOnFhirAuthService,        
-    ],
+    providers: [BackendServiceAuthService, SmartOnFhirAuthService],
     imports: [
-        JwtModule.register({ privateKey }),
+        JwtModule.register({
+            privateKey,
+        }),
         HttpModule,
     ],
 })
-
-export class EpicAuthModule {}
+export class EpicAuthModule { }
