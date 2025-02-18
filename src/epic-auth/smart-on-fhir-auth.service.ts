@@ -5,7 +5,7 @@ import { URLSearchParams } from 'url';
 import { JwtService } from '@nestjs/jwt';
 
 // Patient
-const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94'
+const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94';
 
 // Practiotioner
 //const EPIC_CLIENT_ID = '1a9d7bf8-04c5-49a2-bbc6-73de46a0895a'
@@ -18,7 +18,7 @@ export class SmartOnFhirAuthService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) {}
 
   // Step 1: Fetch Metadata to Get OAuth URLs
@@ -35,47 +35,51 @@ export class SmartOnFhirAuthService {
   }
 
   // Step 2: Build Authorization URL for Standalone Launch
-  async buildAuthUrl(metadata: any, launchToken: string, iss: string): Promise<string> {
+  async buildAuthUrl(
+    metadata: any,
+    launchToken: string,
+    iss: string,
+  ): Promise<string> {
     this.authUrl = metadata.rest[0].security.extension[0].extension.find(
-      (ext) => ext.url === 'authorize'
+      (ext) => ext.url === 'authorize',
     ).valueUri;
 
     this.tokenUrl = metadata.rest[0].security.extension[0].extension.find(
-      (ext) => ext.url === 'token'
+      (ext) => ext.url === 'token',
     ).valueUri;
 
     const state = Math.random().toString(36).substring(7); // Generate a random state
 
     return `${this.authUrl}?launch=${launchToken}&response_type=code&client_id=${EPIC_CLIENT_ID}&redirect_uri=${encodeURIComponent(
-      this.redirectUri
+      this.redirectUri,
     )}&scope=launch&state=${state}&aud=${encodeURIComponent(iss)}`;
   }
 
   // Step 3: Exchange Authorization Code for Access Token
-  async getJWT(authCode: string): Promise<any> { 
+  async getJWT(authCode: string): Promise<any> {
     const requestBody = new URLSearchParams();
     requestBody.append('grant_type', 'authorization_code');
     requestBody.append('code', authCode);
     requestBody.append('redirect_uri', this.redirectUri);
-    requestBody.append('client_id', EPIC_CLIENT_ID);    
+    requestBody.append('client_id', EPIC_CLIENT_ID);
 
     if (this.tokenUrl === undefined) {
-      this.tokenUrl = "https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/token"
+      this.tokenUrl =
+        'https://vendorservices.epic.com/interconnect-amcurprd-oauth/oauth2/token';
     }
 
     try {
       const response = await firstValueFrom(
         this.httpService.post(this.tokenUrl, requestBody.toString(), {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        })
+        }),
       );
 
-      console.log('Token Response:', response.data)
+      console.log('Token Response:', response.data);
 
-      const idToken = response.data.id_token
-      console.log('ID Token:', idToken)
-      console.log(this.jwtService.decode(idToken))
-
+      const idToken = response.data.id_token;
+      console.log('ID Token:', idToken);
+      console.log(this.jwtService.decode(idToken));
 
       return response.data;
     } catch (error) {

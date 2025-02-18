@@ -9,17 +9,13 @@ import { SmartOnFhirAuthService } from './smart-on-fhir-auth.service';
 const private_key = fs.readFileSync('private_key.pem', 'utf8');
 
 @Module({
-    controllers: [EpicAuthController],
-    providers: [
-        BackendServiceAuthService,
-        SmartOnFhirAuthService,        
-    ],
-    imports: [
-        JwtModule.register({
-            privateKey: private_key,
-        }),
-        HttpModule,
-    ],
+  controllers: [EpicAuthController],
+  providers: [BackendServiceAuthService, SmartOnFhirAuthService],
+  imports: [
+    JwtModule.register({
+      privateKey: private_key,
+    }),
+    HttpModule,
+  ],
 })
-
 export class EpicAuthModule {}

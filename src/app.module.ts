@@ -6,11 +6,13 @@ import { EpicAuthModule } from './epic-auth/epic-auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
+import { PatientsModule } from './patients/patients.module';
 
 @Module({
   imports: [
     EpicAuthModule,
     UsersModule,
+    PatientsModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -18,7 +20,7 @@ import { UsersModule } from './users/users.module';
       port: 5432,
       username: 'postgres',
       password: 'click123',
-      database: 'epic_poc',      
+      database: 'epic_poc',
       entities: [User],
       synchronize: true,
     }),
