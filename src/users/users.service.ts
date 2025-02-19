@@ -13,12 +13,21 @@ import { URLSearchParams } from 'url';
 import { JwtService } from '@nestjs/jwt';
 
 export const Roles = (...roles: Role[]) => SetMetadata('roles', roles);
+
 export const EpicAccessToken = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     return request['epic_access_token'];
   },
 );
+
+export const EpicFhirId = createParamDecorator(
+    (data: unknown, ctx: ExecutionContext) => {
+      const request = ctx.switchToHttp().getRequest();
+      return request['epic_fhir_id'];
+    },
+  );
+
 export const EpicScope = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();

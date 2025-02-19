@@ -23,7 +23,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('AuthGuard');
     const request = context.switchToHttp().getRequest();
 
     //TODO: Move base to config
@@ -67,6 +66,7 @@ export class AuthGuard implements CanActivate {
       }
       request['epic_access_token'] = user.access_token;
       request['epic_scope'] = user.scope;
+      request['epic_fhir_id'] = user.fhir_id;
       const expiry = user.expires_at;
       if (expiry.getTime() <= Date.now()) {
         this.throwForbiddenException(
