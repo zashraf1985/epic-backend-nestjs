@@ -5,9 +5,13 @@ import { HttpModule } from '@nestjs/axios';
 import { PatientsService } from './patients.service';
 
 @Module({
-  imports: [UsersModule, HttpModule],
-  controllers: [PatientsController],
-  providers: [PatientsService],
-  exports: [PatientsService]
+    controllers: [PatientsController],
+    imports: [
+        UsersModule,
+        HttpModule.register({
+            baseURL: 'https://vendorservices.epic.com/interconnect-amcurprd-oauth/api/FHIR/R4',
+        })
+    ],
+    providers: [PatientsService],
 })
-export class PatientsModule {}
+export class PatientsModule { }
