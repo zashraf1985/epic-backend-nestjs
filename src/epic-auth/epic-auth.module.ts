@@ -9,7 +9,7 @@ import { SmartOnFhirAuthService } from './smart-on-fhir-auth.service';
 let privateKey = ""
 
 try {
-    privateKey = fs.readFileSync('private_key.pem', 'utf8')
+    //privateKey = fs.readFileSync('private_key.pem', 'utf8')
 } catch (error) {
     console.warn('Error reading private key:', error)
 }

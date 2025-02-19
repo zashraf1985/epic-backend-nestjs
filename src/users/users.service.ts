@@ -25,6 +25,12 @@ export const EpicScope = createParamDecorator(
     return request['epic_scope'];
   },
 );
+export const EpicFhirId = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request['epic_fhir_id'];
+  },
+);
 
 // Patient
 const EPIC_CLIENT_ID = '7104a6de-0683-40db-bb39-e616a30fce94';

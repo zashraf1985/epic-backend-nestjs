@@ -11,7 +11,7 @@ export class BackendServiceAuthService {
 
   constructor(private readonly jwtService: JwtService) {
     // Load private key from a file
-    this.privateKey = fs.readFileSync('private_key.pem', 'utf8');
+    //this.privateKey = fs.readFileSync('private_key.pem', 'utf8');
   }
 
   generateJWT(): string {
