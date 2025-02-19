@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Headers } from '@nestjs/common';
 import { AuthGuard } from '../users/auth.guard';
 import { EpicAccessToken, EpicScope, Roles } from 'src/users/users.service';
 import { Role } from 'src/users/user.entity';
@@ -23,8 +23,8 @@ export class PatientsController {
 
 
   @Get(':id')
-  async getPatientById(@Param('id') id: string) {
-    const patient = await this.patientsService.getPatientById(id);
+  async getPatientById(@Param('id') id: string, @Headers('Authorization') authHeader: string) {
+    const patient = await this.patientsService.getPatientById(id, authHeader);
     return patient;
   }
 }
