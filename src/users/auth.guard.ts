@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
     private usersService: UsersService,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {    
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     //TODO: Move base to config

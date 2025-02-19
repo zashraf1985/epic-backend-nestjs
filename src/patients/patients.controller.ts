@@ -8,7 +8,6 @@ import { PatientsService } from './patients.service';
 @Roles(Role.PATIENT)
 @UseGuards(AuthGuard)
 export class PatientsController {
-
     constructor(private readonly patientsService: PatientsService) { }
 
     @Get('demographics')
