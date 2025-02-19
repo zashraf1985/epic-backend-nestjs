@@ -23,8 +23,8 @@ export class PatientsController {
 
 
   @Get(':id')
-  async getPatientById(@Param('id') id: string, @Headers('Authorization') authHeader: string) {
-    const patient = await this.patientsService.getPatientById(id, authHeader);
+  async getPatientById(@Param('id') id: string, @EpicAccessToken() epicAccessToken: string) {
+    const patient = await this.patientsService.getPatientById(id, epicAccessToken);
     return patient;
   }
 }
