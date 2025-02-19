@@ -81,7 +81,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZmZDg0Z
 
 ###
 get http://localhost:3000/patients/demographics
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZmZDg0ZS0xZWJkLTRhYTgtOTc1Yi1kYjI1YjUxNjc3ZmEiLCJyb2xlIjoiUGF0aWVudCIsImlhdCI6MTczOTkyNDM5MX0.LFsUILyPfxEbwpd6uZKL-JDOS6r9Gmcwt7rcmcJD-Og
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2ZmZDg0ZS0xZWJkLTRhYTgtOTc1Yi1kYjI1YjUxNjc3ZmEiLCJyb2xlIjoiUGF0aWVudCIsImlhdCI6MTczOTk0NjA4N30.ib4aUPe6_zAJapDJWDqUCg0neMWE848FcR2e1BY7GzU
 
 ###
 get https://vendorservices.epic.com/interconnect-amcurprd-oauth/api/FHIR/R4/patient/eJzlzKe3KPzAV5TtkxmNivQ3
