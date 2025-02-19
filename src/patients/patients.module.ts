@@ -3,7 +3,7 @@ import { PatientsController } from './patients.controller';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  controllers: [PatientsController],
-  imports: [UsersModule],
+    controllers: [PatientsController],
+    imports: [UsersModule],
 })
-export class PatientsModule {}
+export class PatientsModule { }
