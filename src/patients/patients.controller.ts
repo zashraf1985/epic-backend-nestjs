@@ -25,4 +25,12 @@ export class PatientsController {
   ) {
     return await this.patientsService.getPatientMedications(epicFhirId, epicAccessToken);
   }
+
+  @Get('clinical-notes')
+  async getClinicalNotes(
+    @EpicAccessToken() epicAccessToken: string,
+    @EpicFhirId() epicFhirId: string
+  ) {
+    return await this.patientsService.getPatientClinicalNotes(epicFhirId, epicAccessToken);
+  }
 }

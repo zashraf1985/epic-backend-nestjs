@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
@@ -9,25 +9,17 @@ export class PatientsService {
     constructor(private readonly httpService: HttpService) { }
 
     async getPatientMedications(epicFhirId: string, epicAccessToken: string) {
-        try {
-            const response = await firstValueFrom(
-                this.httpService.get(
-                    `${R4_BASE_PATH}/MedicationRequest?patient=${epicFhirId}`, {
-                    headers: {
-                        Authorization: `Bearer ${epicAccessToken}`,
-                        'Content-Type': 'application/fhir+json',
-                    },
-                }),
-            );
+      const response = await firstValueFrom(
+        this.httpService.get(
+            `${R4_BASE_PATH}/MedicationRequest?patient=${epicFhirId}`, {
+            headers: {
+                Authorization: `Bearer ${epicAccessToken}`,
+                'Content-Type': 'application/fhir+json',
+            },
+        }),
+    );
 
-            return this.parseMedications(response.data);
-
-        } catch (error) {
-            throw new HttpException(
-                error.response?.data || error,
-                error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
+    return this.parseMedications(response.data);
     }
 
     async getDemographics(epicFhirId: string, epicAccessToken: string) {
@@ -44,6 +36,21 @@ export class PatientsService {
 
         return this.parseDemographics(resp.data);
     }
+
+    async getPatientClinicalNotes(epicFhirId: string, epicAccessToken: string) {
+      const response = await firstValueFrom(
+          this.httpService.get(
+              `${R4_BASE_PATH}/DocumentReference?patient=${epicFhirId}&_count=10`,
+              {
+                  headers: {
+                      Authorization: `Bearer ${epicAccessToken}`,
+                      Accept: 'application/fhir+json',
+                  }
+              }
+          ))
+
+      return this.parseClinicalNotes(response.data);
+  }
 
     parseDemographics(patientData: any) {
         return {
@@ -96,5 +103,37 @@ export class PatientsService {
             medications,
         };
     }
+
+    parseClinicalNotes(data: any): any[] {
+      if (!data || !data.entry) return [];
+    
+      const validEntries = data.entry.filter(
+        (entry: any) => entry.resource?.hasOwnProperty('id')
+      );
+    
+      return validEntries.map((entry: any) => {
+        const resource = entry.resource;
+        
+        return {
+          id: resource.id,
+          date: resource.date,
+          author: resource.author?.[0]?.display || 'Unknown',
+          type: resource.type?.text || 'Unknown',
+          subject: resource.subject?.display || 'Unknown',
+          status: resource.status || 'Unknown',
+          category: resource.category?.[0]?.text || 'Unknown',
+          authenticator: resource.authenticator?.display || 'Unknown',
+          custodian: resource.custodian?.display || 'Unknown',
+          encounter: resource.context?.encounter?.[0]?.display || 'Unknown',
+          content: resource.content && Array.isArray(resource.content)
+            ? resource.content.map((c: any) => ({
+                type: c.attachment?.contentType || 'Unknown',
+                url: c.attachment?.url || 'Unknown',
+              }))
+            : [],
+        };
+      });
+    }
+    
 }
 
