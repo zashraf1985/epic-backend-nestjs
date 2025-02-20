@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { Response } from 'express';
 
 const R4_BASE_PATH = '/interconnect-amcurprd-oauth/api/FHIR/R4'
 
@@ -50,6 +51,35 @@ export class PatientsService {
           ))
 
       return this.parseClinicalNotes(response.data);
+  }
+
+  async downloadPatientClinicalNotes(
+    noteId: string,
+    epicAccessToken: string,
+    res: Response,
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${R4_BASE_PATH}/Binary/${noteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${epicAccessToken}`,
+            Accept: 'application/fhir+json',
+          },
+        }
+      )
+    );
+
+    const base64Data = response.data.data;
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    res.set({
+      'Content-Type': response.data.contentType || 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${noteId}.html"`,
+      'Content-Length': buffer.length,
+    });
+
+    res.send(buffer);
   }
 
     parseDemographics(patientData: any) {

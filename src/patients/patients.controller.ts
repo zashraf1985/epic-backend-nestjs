@@ -1,8 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Res } from '@nestjs/common';
 import { AuthGuard } from '../users/auth.guard';
 import { EpicAccessToken, EpicFhirId, Roles } from 'src/users/users.service';
 import { Role } from 'src/users/user.entity';
 import { PatientsService } from './patients.service';
+import { Response } from 'express';
 
 @Controller('patients')
 @Roles(Role.PATIENT)
@@ -32,5 +33,14 @@ export class PatientsController {
     @EpicFhirId() epicFhirId: string
   ) {
     return await this.patientsService.getPatientClinicalNotes(epicFhirId, epicAccessToken);
+  }
+
+  @Get('download-clinical-notes/:noteId')
+  async getPatientClinicalNotes(
+    @Param('noteId') noteId: string,
+    @EpicAccessToken() epicAccessToken: string,
+    @Res() res: Response,
+  ) {
+    await this.patientsService.downloadPatientClinicalNotes(noteId, epicAccessToken, res);
   }
 }
