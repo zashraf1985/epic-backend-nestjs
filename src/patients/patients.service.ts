@@ -45,6 +45,117 @@ export class PatientsService {
         return this.parseDemographics(resp.data);
     }
 
+    async getAllergies(epicFhirId: string, epicAccessToken: string) {
+        try {
+            console.log(`Fetching allergies for patient ID: ${epicFhirId}`);
+
+            const response = await firstValueFrom(this.httpService.get(
+                `${R4_BASE_PATH}/List?code=allergies&patient=${epicFhirId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${epicAccessToken}`,
+                        Accept: 'application/fhir+json',
+                    }
+                }
+            ));
+
+            // Extract only the relevant data from the response
+            return this.parseAllergies(response.data);
+        } catch (error) {
+            console.error("Error fetching allergies:", error);
+            throw new HttpException(
+                error.response?.data || "Failed to fetch allergies",
+                error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    async getAllergyListById(allergyListId: string, epicAccessToken: string) {
+        try {
+            console.log(`Fetching allergy list by ID: ${allergyListId}`);
+
+            const response = await firstValueFrom(this.httpService.get(
+                `${R4_BASE_PATH}/List/${allergyListId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${epicAccessToken}`,
+                        Accept: 'application/fhir+json',
+                    }
+                }
+            ));
+
+            return this.parseAllergyList(response.data);
+        } catch (error) {
+            console.error("Error fetching allergy list by ID:", error);
+            throw new HttpException(
+                error.response?.data || "Failed to fetch allergy list",
+                error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    parseAllergyList(allergyResource: any) {
+        if (!allergyResource || allergyResource.resourceType !== 'List') {
+            return { error: "Invalid resource" };
+        }
+        return {
+            id: allergyResource.id || "Unknown",
+            resourceType: allergyResource.resourceType,
+            status: allergyResource.status || "Unknown",
+            mode: allergyResource.mode || "Unknown",
+            title: allergyResource.title || "Unknown",
+            code: allergyResource.code?.coding?.[0]?.code || "Unknown",
+            subject: allergyResource.subject || {},
+            allergies: allergyResource.entry?.map((entry: any) => ({
+                allergy: entry.item?.display || "Unknown",
+                reference: entry.item?.reference || "Unknown"
+            })) || [],
+            _raw: allergyResource,
+
+        };
+    }
+
+    parseAllergies(allergyData: any) {
+        if (!allergyData || !allergyData.entry) {
+            return { patient: "Unknown", allergies: [] };
+        }
+
+        // Extract patient name
+        const patientName = allergyData.entry.find(
+            (entry: any) => entry.resource?.subject?.display
+        )?.resource?.subject?.display || "Unknown";
+
+        // Extract all allergy-related data
+        const allergies = allergyData.entry
+            .filter((entry: any) => entry.resource?.resourceType === "List")
+            .map((entry: any) => {
+                const resource = entry.resource;
+                const emptyReason = resource?.emptyReason?.text || null;
+
+                return {
+                    fullUrl: entry.fullUrl || "Unknown",
+                    id: resource?.id || "Unknown",
+                    status: resource?.status || "Unknown",
+                    mode: resource?.mode || "Unknown",
+                    title: resource?.title || "Unknown",
+                    code: resource?.code?.coding?.[0]?.code || "Unknown",
+                    emptyReason: emptyReason,
+                    allergies: emptyReason
+                        ? [{ allergy: "No allergies recorded", reason: emptyReason }]
+                        : resource?.entry?.map((item: any) => ({
+                            allergy: item.item?.display || "Unknown",
+                            reference: item.item?.reference || "Unknown"
+                        })) || []
+                };
+            });
+
+        return {
+            patient: patientName,
+            allergies
+        };
+    }
+
+
     parseDemographics(patientData: any) {
         return {
             id: patientData.id,
